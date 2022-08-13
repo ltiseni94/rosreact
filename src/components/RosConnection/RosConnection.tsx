@@ -1,16 +1,31 @@
-import React, {createContext, useContext, Fragment, useEffect} from 'react';
+import React, {createContext, useContext, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import { Ros } from 'roslib';
-import { connect, setupConnectionCallbacks, closeConnection } from "./utils";
+import { sha512 } from "js-sha512";
 
-const RosContext = createContext(new Ros({}));
 const RosHandle = new Ros({});
+const RosContext = createContext(RosHandle);
 
 interface RosProviderProps {
     children: React.ReactNode;
+    url: string;
+    autoConnect?: boolean;
+    autoConnectTimeout?: number;
+    authenticate?: boolean;
+    user?: string;
+    password?: string;
 }
 
-const RosProvider = (props : RosProviderProps) => {
+export const RosConnection = (props : RosProviderProps) => {
+    
+    useEffect(() => {
+        setupConnectionCallbacks(RosHandle, props.url, props.autoConnect, props.autoConnectTimeout, props.authenticate, props.user, props.password);
+        connect(RosHandle, props.url, props.authenticate, props.user, props.password)
+        return () => {
+            closeConnection(RosHandle);
+        }
+    }, []);
+
     return (
         <RosContext.Provider value={RosHandle}>
             {props.children}
@@ -18,8 +33,14 @@ const RosProvider = (props : RosProviderProps) => {
     );
 }
 
-RosProvider.propTypes = {
-    children: PropTypes.node.isRequired
+RosConnection.propTypes = {
+    children: PropTypes.node.isRequired,
+    url: PropTypes.string.isRequired,
+    autoConnect: PropTypes.bool,
+    autoConnectTimeout: PropTypes.number,
+    authenticate: PropTypes.bool,
+    user: PropTypes.string,
+    password: PropTypes.string,
 };
 
 export function useRos() : Ros {
@@ -30,72 +51,58 @@ export function useRos() : Ros {
     return ros;
 }
 
-interface ConnectionProps {
-    url: string;
-    autoConnect?: boolean;
-    autoConnectTimeout?: number;
-    authenticate?: boolean;
-    user?: string;
-    password?: string;
-}
 
-const Connection = (props : ConnectionProps) => {
-    const ros = useRos();
-
-    useEffect(() => {
-        setupConnectionCallbacks(ros, props.url, props.autoConnect, props.autoConnectTimeout, props.authenticate, props.user, props.password);
-        connect(ros, props.url, props.authenticate, props.user, props.password)
-        return () => {
-            closeConnection(ros);
+export function setupConnectionCallbacks (ros: Ros, url: string = "ws://127.0.0.1:9090", autoConnect: boolean = true, autoConnectTimeout: number = 1, authenticate: boolean = false, user: string = '', password: string = '') : void {
+    ros.on('connection', () => {
+        console.log("Connected")
+    });
+    ros.on('close', () => {
+        console.log("Disconnected");
+    });
+    ros.on('error', () => {
+        console.log("Connection error");
+        if (autoConnect) {
+            setTimeout(() => {
+                connect(ros, url, authenticate, user, password);
+            }, autoConnectTimeout);
         }
-    }, []);
-
-    return (
-        <Fragment/>
-    )
+    })
 }
 
-Connection.propTypes = {
-    url: PropTypes.string.isRequired,
-    autoConnect: PropTypes.bool,
-    autoConnectTimeout: PropTypes.number,
-    authenticate: PropTypes.bool,
-    user: PropTypes.string,
-    password: PropTypes.string,
+export function connect (ros: Ros, url: string, authenticate: boolean = false, user: string = '', password: string = '') : void {
+    ros.connect(url);
+    if (authenticate) {
+
+        const authMessage = new AuthenticationMessage(url, user, password);
+        
+        ros.authenticate(authMessage.getMac(), authMessage.client, authMessage.dest, authMessage.rand, authMessage.time, authMessage.level, authMessage.timeEnd);
+    }
 }
 
-interface RosConnectionProps {
-    children: React.ReactNode;
-    url: string;
-    autoConnect: boolean;
-    autoConnectTimeout: number;
-    authenticate?: boolean;
-    user?: string;
-    password?: string;
+export function closeConnection (ros: Ros) : void {
+    ros.close();
 }
 
-export const RosConnection = (props: RosConnectionProps) => {
-    const autoConnectTimeout = props.autoConnectTimeout || 1000;
-    const autoConnect = props.autoConnect || false;
-    const authenticate = props.authenticate || false;
-    const url = props.url || "ws://127.0.0.1:9090";
-    const user = props.user || "";
-    const password = props.password || "";
+class AuthenticationMessage {
+    secret: string;
+    client: string;
+    dest: string;
+    rand: string;
+    time: number;
+    timeEnd: number;
+    level: string;
 
-    return (
-        <RosProvider>
-            <Connection url={url} autoConnect={autoConnect} autoConnectTimeout={autoConnectTimeout} authenticate={authenticate} user={user} password={password}/>
-            {props.children}
-        </RosProvider>
-    )
-}
+    constructor(url: string, user: string, password: string) {
+        this.dest = url;
+        this.client = user;
+        this.secret = password;
+        this.rand = "randomstring";
+        this.time = new Date().getTime();
+        this.level = "user";
+        this.timeEnd = this.time;
+    }
 
-RosConnection.propTypes = {
-    children: PropTypes.node,
-    url: PropTypes.string.isRequired,
-    autoConnect: PropTypes.bool,
-    autoConnectTimeout: PropTypes.number,
-    authenticate: PropTypes.bool,
-    user: PropTypes.string,
-    password: PropTypes.string,
+    getMac() {
+        return sha512(this.secret + this.client + this.dest + this.rand + this.time.toString() + this.level + this.timeEnd.toString());
+    }
 }

@@ -1,1 +1,1 @@
-export { useRos, RosConnection } from './RosConnection';
+export { useRos, RosConnection, closeConnection, connect, setupConnectionCallbacks } from './RosConnection';
