@@ -9,10 +9,10 @@
   ],
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "dev": "webpack --mode development",
-    "build": "npm run build:esm && npm run build:cjs",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs && mkdir release && npm run pack",
     "build:esm": "tsc",
     "build:cjs": "tsc --module commonjs --outDir dist/cjs",
+    "clean": "rm -rf dist && rm -rf release",
     "pack": "npm pack --pack-destination ./release/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
