@@ -6,9 +6,9 @@ import { sha512 } from "js-sha512";
 const RosHandle = new Ros({});
 const RosContext = createContext(RosHandle);
 
-interface RosProviderProps {
+interface RosConnectionProps {
     children: React.ReactNode;
-    url: string;
+    url?: string;
     autoConnect?: boolean;
     autoConnectTimeout?: number;
     authenticate?: boolean;
@@ -16,7 +16,7 @@ interface RosProviderProps {
     password?: string;
 }
 
-export const RosConnection = (props : RosProviderProps) => {
+export const RosConnection = (props : RosConnectionProps) => {
     
     useEffect(() => {
         setupConnectionCallbacks(RosHandle, props.url, props.autoConnect, props.autoConnectTimeout, props.authenticate, props.user, props.password);
@@ -69,7 +69,7 @@ export function setupConnectionCallbacks (ros: Ros, url: string = "ws://127.0.0.
     })
 }
 
-export function connect (ros: Ros, url: string, authenticate: boolean = false, user: string = '', password: string = '') : void {
+export function connect (ros: Ros, url: string = "ws://127.0.0.1:9090", authenticate: boolean = false, user: string = '', password: string = '') : void {
     ros.connect(url);
     if (authenticate) {
 
