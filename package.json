@@ -1,6 +1,6 @@
 {
   "name": "@ltiseni94/rosreact",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Template library for react typescript module",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
