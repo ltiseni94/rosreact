@@ -61,10 +61,11 @@ interface PublisherProps {
 
 Publisher.propTypes = {
     topic: PropTypes.string.isRequired,
+    message: PropTypes.object,
     messageType: PropTypes.string.isRequired,
     throttleRate: PropTypes.number,
     latch: PropTypes.bool,
     queueLength: PropTypes.number,
     queueSize: PropTypes.number,
-    messageInitialValue: PropTypes.object,
+    autoRepeat: PropTypes.bool,
 }
