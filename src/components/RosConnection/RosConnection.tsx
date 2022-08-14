@@ -43,16 +43,8 @@ RosConnection.propTypes = {
     password: PropTypes.string,
 };
 
-export function useRos() : Ros {
-    const ros = useContext(RosContext);
-    if (ros === undefined) {
-        throw new Error('useRos must be used in a component wrapped by a RosProvider')
-    }
-    return ros;
-}
 
-
-export function setupConnectionCallbacks (ros: Ros, url: string = "ws://127.0.0.1:9090", autoConnect: boolean = true, autoConnectTimeout: number = 1, authenticate: boolean = false, user: string = '', password: string = '') : void {
+export function setupConnectionCallbacks (ros: Ros, url: string = "ws://127.0.0.1:9090", autoConnect: boolean = false, autoConnectTimeout: number = 1000, authenticate: boolean = false, user: string = '', password: string = '') : void {
     ros.on('connection', () => {
         console.log("Connected")
     });
@@ -105,4 +97,13 @@ class AuthenticationMessage {
     getMac() {
         return sha512(this.secret + this.client + this.dest + this.rand + this.time.toString() + this.level + this.timeEnd.toString());
     }
+}
+
+
+export function useRos() : Ros {
+    const ros = useContext(RosContext);
+    if (ros === undefined) {
+        throw new Error('rosreact components must be wrapped by a RosProvider')
+    }
+    return ros;
 }
