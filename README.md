@@ -133,7 +133,7 @@ Don't forget to replace DISTRO with your ROS distribution - *noetic*, *melodic*,
                     />
 
                     <ServiceCaller 
-                        name="/add_two_ints" 
+                        name="/setbool" 
                         serviceType="std_srvs/SetBool" 
                         request={{data: true}} 
                         trigger={trigger}
