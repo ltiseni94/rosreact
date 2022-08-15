@@ -19,10 +19,10 @@ export const TopicListProvider = (props: TopicListProviderProps) => {
     };
 
     useEffect(() => {
-        if (props.fetch || props.fetch === undefined) {
+        if (props.trigger || props.trigger === undefined) {
             getTopicList(ros, callback, props.failedCallback)
         }
-    }, [props.fetch]);
+    }, [props.trigger]);
 
     return (
         <TopicListContext.Provider value={topicList}>
@@ -34,14 +34,14 @@ export const TopicListProvider = (props: TopicListProviderProps) => {
 
 interface TopicListProviderProps {
     children?: React.ReactNode;
-    fetch?: boolean;
+    trigger?: boolean;
     failedCallback?: (error: any) => void;
 }
 
 
 TopicListProvider.propTypes = {
     children: PropTypes.node,
-    fetch: PropTypes.bool,
+    trigger: PropTypes.bool,
     failedCallback: PropTypes.func,
 }
 

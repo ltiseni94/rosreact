@@ -11,16 +11,17 @@ const ParamListContext = createContext(initialParams);
 
 export const ParamListProvider = (props: ParamListProviderProps) => {
     const ros = useRos();
+    const get = props.trigger;
     const [paramList, setParamList] = useState(initialParams);
     const callback = (newParamList: string[]) => {
         setParamList(newParamList);
     };
 
     useEffect(() => {
-        if (props.fetch || props.fetch === undefined) {
+        if (props.trigger || props.trigger === undefined) {
             getParamList(ros, callback, props.failedCallback)
         }
-    }, [props.fetch]);
+    }, [props.trigger]);
 
     return (
         <ParamListContext.Provider value={paramList}>
@@ -32,14 +33,14 @@ export const ParamListProvider = (props: ParamListProviderProps) => {
 
 interface ParamListProviderProps {
     children?: React.ReactNode;
-    fetch?: boolean;
+    trigger?: boolean;
     failedCallback?: (error: any) => void;
 }
 
 
 ParamListProvider.propTypes = {
     children: PropTypes.node,
-    fetch: PropTypes.bool,
+    trigger: PropTypes.bool,
     failedCallback: PropTypes.func,
 }
 

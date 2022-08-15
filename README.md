@@ -128,35 +128,35 @@ Don't forget to replace DISTRO with your ROS distribution - *noetic*, *melodic*,
 
                     <ServiceServer 
                         name="/react/service" 
-                        serviceType="argo_msgs/UserInput" 
+                        serviceType="std_srvs/SetBool" 
                         callback={serviceServerCallback}
                     />
 
                     <ServiceCaller 
-                        name="/lights" 
-                        serviceType="argo_msgs/MotorCommand" 
-                        request={{command: "green"}} 
-                        trigger={toggler} 
+                        name="/add_two_ints" 
+                        serviceType="std_srvs/SetBool" 
+                        request={{data: true}} 
+                        trigger={trigger}
                         callback={(resp) => {console.log(resp)}} 
                         failedCallback={(error) => {console.log(error)}}
                     />
                     
-                    <TopicListProvider 
-                        fetch={true}
+                    <TopicListProvider
+                        trigger={trigger} 
                         failedCallback={(e) => {console.log(e)}}
                     >
                         <TopicListView/>
                     </TopicListProvider>
                     
                     <ServiceListProvider
-                        fetch={true}
+                        trigger={trigger}
                         failedCallback={(e) => {console.log(e)}}
                     >
                         <ServiceListView/>
                     </ServiceListProvider>
                     
                     <ParamListProvider
-                        fetch={true} 
+                        trigger={trigger} 
                         failedCallback={(e) => {console.log(e)}}
                     >
                         <ParamListView/>
@@ -167,6 +167,16 @@ Don't forget to replace DISTRO with your ROS distribution - *noetic*, *melodic*,
                 <ImageViewer topic="/camera"/>
             </div>
         )
+    }
+
+    const serviceServerCallback = (request, response) => {
+        if (request.data === true) {
+            response.success = true;
+            response.message = "Passed true value";
+        } else {
+            response.success = false;
+            response.message = "Passed false value";
+        }
     }
 
     const ParamView = () => {

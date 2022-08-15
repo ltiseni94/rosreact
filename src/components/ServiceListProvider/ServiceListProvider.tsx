@@ -17,10 +17,10 @@ export const ServiceListProvider = (props: ServiceListProviderProps) => {
     };
 
     useEffect(() => {
-        if (props.fetch || props.fetch === undefined) {
+        if (props.trigger || props.trigger === undefined) {
             getServiceList(ros, callback, props.failedCallback)
         }
-    }, [props.fetch]);
+    }, [props.trigger]);
 
     return (
         <ServiceListContext.Provider value={serviceList}>
@@ -32,14 +32,14 @@ export const ServiceListProvider = (props: ServiceListProviderProps) => {
 
 interface ServiceListProviderProps {
     children?: React.ReactNode;
-    fetch?: boolean;
+    trigger?: boolean;
     failedCallback?: (error: any) => void;
 }
 
 
 ServiceListProvider.propTypes = {
     children: PropTypes.node,
-    fetch: PropTypes.bool,
+    trigger: PropTypes.bool,
     failedCallback: PropTypes.func,
 }
 
