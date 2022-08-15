@@ -71,7 +71,7 @@ Don't forget to replace DISTRO with your ROS distribution - *noetic*, *melodic*,
 
         useEffect(() => {
             setTimeout(() => {
-                setTrigger(!toggler);
+                setTrigger(!trigger);
             }, 3000);
         }, [trigger])
 
