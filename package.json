@@ -16,6 +16,10 @@
     "pack": "npm pack --pack-destination ./release/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ltiseni94/rosreact.git"
+  },
   "author": "Luca Tiseni",
   "license": "MIT",
   "keywords": [
