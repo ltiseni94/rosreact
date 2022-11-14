@@ -19,6 +19,8 @@ interface ImageViewerProps {
     topic: string;
     height?: number;
     width?: number;
+    containerHeight?: number;
+    containerWidth?: number;
     host?: string;
     port?: number;
     encoding?: Encoding;
@@ -30,6 +32,7 @@ interface ImageViewerProps {
     qmax?: number;
     gop?: number;
     vp8Quality?: string;
+    imageStyle?: object;
 }
 
 export function rosImageSrcString(topic: string, height: number = 480, width: number = 640, host: string = "http://localhost", port: number = 8080, encoding : Encoding = Encoding.mjpeg, transportLayer: TransportLayer = TransportLayer.raw, quality : number = 95, bitrate : number = 100000, qmin: number = 10, qmax: number = 42, gop: number = 250, vp8Quality: string = 'realtime') : string {
@@ -54,13 +57,18 @@ function getOtherSourceString(topic: string, height: number, width: number, host
     return `${host}:${port}/stream?topic=${topic}&type=${encoding}&default_transport=${transportLayer}&width=${width}&height=${height}`;
 }
 
+const defaultImageStyle = {
+    maxWidth: "100%",
+    height: "auto",
+}
 
 export const ImageViewer = (props : ImageViewerProps) => {
+    const style = props.imageStyle || ((props.containerWidth && props.containerHeight) ? {} : defaultImageStyle);
     if (props.disabled) {
-        return (<img src="" width={props.width} height={props.height} alt=""/>);
+        return (<img src="" alt="" style={style}/>);
     } else {
         const src = rosImageSrcString(props.topic, props.height, props.width, props.host, props.port, props.encoding, props.transportLayer, props.quality, props.bitrate, props.qmin, props.qmax, props.gop, props.vp8Quality);
-        return (<img src={src} width={props.width} height={props.height} alt=""/>)
+        return (<img src={src} width={props.containerWidth} height={props.containerHeight} alt="" style={style}/>)
     }
 }
 
@@ -68,6 +76,8 @@ ImageViewer.propTypes = {
     topic: PropTypes.string.isRequired,
     height: PropTypes.number,
     width: PropTypes.number,
+    containerWidth: PropTypes.number,
+    containerHeight: PropTypes.number,
     host: PropTypes.string,
     port: PropTypes.number,
     encoding: PropTypes.string,
@@ -79,4 +89,5 @@ ImageViewer.propTypes = {
     qmax: PropTypes.number,
     gop: PropTypes.number,
     vp8Quality: PropTypes.string,
+    imageStyle: PropTypes.object,
 }

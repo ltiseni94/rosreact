@@ -233,7 +233,7 @@ Use the roslib library to perform other low-level operations. You just need to r
 
 ## **Migration Guide from roslib-reactjs**
 
-This library replace the legacy version [roslib-reactjs](https://www.npmjs.com/package/roslib-reactjs). Unfortunately, there are breaking changes to the API.
+This library replace the legacy version roslib-reactjs (no more available online). Unfortunately, there are breaking changes to the API.
 
 1. RosConnect --> RosConnection; timeout --> autoConnectTimeout.
 2. Subscriber: name --> topic; type --> messageType; rate --> throttleRate; queue_size --> queueSize; queueLength, latch, and customCallback props have been added. With customCallback, subscriber can be used as a standalone component. The customCallback takes as input the new incoming message, that can then be manipulated.
