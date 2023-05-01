@@ -43,7 +43,7 @@ export const Subscriber = (props: SubscriberComponentProps) => {
     );
 }
 
-type DefaultMessageType = Message;
+export type DefaultMessageType = Message;
 
 export interface SubscriberProps<TMessage = DefaultMessageType> {
     topic: string;
