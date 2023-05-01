@@ -7,11 +7,11 @@ import { useCheckedContext } from "../common";
 
 const MessageContext = createContext(new Message({}));
 
-export const Subscriber = (props: SubscriberProps) => {
+export const Subscriber = (props: SubscriberComponentProps) => {
     const ros = useRos();
-    
+
     const [message, setMessage] = useState(new Message(props.messageInitialValue));
-    
+
     const {topic, messageType, throttleRate, latch, queueLength, queueSize, customCallback, ...other} = props;
 
     const topicSettings: TopicSettings = {
@@ -43,19 +43,20 @@ export const Subscriber = (props: SubscriberProps) => {
     );
 }
 
+type DefaultMessageType = Message;
 
-interface SubscriberProps {
-    children?: React.ReactNode;
+export interface SubscriberProps<TMessage = DefaultMessageType> {
     topic: string;
     messageType: string;
     throttleRate?: number;
     latch?: boolean;
     queueLength?: number;
     queueSize?: number;
-    customCallback?: (msg: Message) => void;
-    messageInitialValue?: object;
+    customCallback?: (msg: TMessage) => void;
+    messageInitialValue?: TMessage;
 }
 
+type SubscriberComponentProps<TMessage = DefaultMessageType> = React.PropsWithChildren<SubscriberProps<TMessage>>;
 
 Subscriber.propTypes = {
     children: PropTypes.node,
@@ -69,14 +70,14 @@ Subscriber.propTypes = {
 }
 
 
-export function subscribe(ros: Ros, settings: TopicSettings, callback: (message: Message) => void): Topic {
-    const topic = getTopic(ros, settings);
+export function subscribe<TMessage = DefaultMessageType>(ros: Ros, settings: TopicSettings, callback: (message: TMessage) => void): Topic<TMessage> {
+    const topic = getTopic<TMessage>(ros, settings);
     topic.subscribe(callback);
     return topic;
 }
 
 
-export function getTopic(ros: Ros, settings: TopicSettings) : Topic {
+export function getTopic<TMessage = DefaultMessageType>(ros: Ros, settings: TopicSettings) : Topic<TMessage> {
     const options = {
         ros: ros,
         name: settings.topic,
@@ -86,7 +87,7 @@ export function getTopic(ros: Ros, settings: TopicSettings) : Topic {
         queue_length: settings.queueLength || 1,
         queue_size: settings.queueSize || 10,
     }
-    return new Topic(options);
+    return new Topic<TMessage>(options);
 }
 
 
@@ -100,7 +101,7 @@ export interface TopicSettings {
 }
 
 
-export function unsubscribe(topic: Topic, callback?: (message: Message) => void): void {
+export function unsubscribe<TMessage = DefaultMessageType>(topic: Topic<TMessage>, callback?: (message: TMessage) => void): void {
     if (callback) {
         topic.unsubscribe(callback);
     } else {
