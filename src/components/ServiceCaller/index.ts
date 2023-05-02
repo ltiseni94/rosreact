@@ -1,1 +1,2 @@
-export { ServiceCaller, callService } from "./ServiceCaller";
+export { ServiceCaller, callService } from './ServiceCaller';
+export { useServiceCall, ServiceCallHookProps } from './useServiceCall';
