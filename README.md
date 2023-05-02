@@ -27,19 +27,20 @@ Don't forget to replace DISTRO with your ROS distribution - *noetic*, *melodic*,
 
 1. RosConnection - COMPONENT: setup the connection. Wraps all other ROS components except ImageViewer
 2. Subscriber - COMPONENT: setup and execute a subscriber. Components wrapped by this subscriber will have access to incoming messages through the *useMsg* hooks.
-3. useMsg - HOOK: Use this hook in a component wrapped by a *Subscriber* to get access to incoming messages.
-4. Publisher - COMPONENT: setup and execute a publisher
-5. ImageViewer - COMPONENT: view streaming from web_video_server http streaming server.
-6. ServiceCaller - COMPONENT: call service
-7. ServiceServer - COMPONENT: setup a service server
-8. Param - COMPONENT: get, set, or delete a ros parameters from the server parameters
-9. useParam - HOOK: use in a component wrapped by a Param component to get the parameter value.
-10. TopicListProvider - COMPONENT
-11. useTopicList - HOOK
-12. ParamListProvider - COMPONENT
-13. useParamList - HOOK
-14. ServiceListProvider - COMPONENT
-15. useServiceList - HOOK
+3. useSubscription - HOOK: All-In-One version of subscriber as a react hook, good to be used inside any component.
+4. useMsg - HOOK: Use this hook in a component wrapped by a *Subscriber* to get access to incoming messages.
+5. Publisher - COMPONENT: setup and execute a publisher
+6. ImageViewer - COMPONENT: view streaming from web_video_server http streaming server.
+7. ServiceCaller - COMPONENT: call service
+8. ServiceServer - COMPONENT: setup a service server
+9. Param - COMPONENT: get, set, or delete a ros parameters from the server parameters
+10. useParam - HOOK: use in a component wrapped by a Param component to get the parameter value.
+11. TopicListProvider - COMPONENT
+12. useTopicList - HOOK
+13. ParamListProvider - COMPONENT
+14. useParamList - HOOK
+15. ServiceListProvider - COMPONENT
+16. useServiceList - HOOK
 
 ### **Example**
 
