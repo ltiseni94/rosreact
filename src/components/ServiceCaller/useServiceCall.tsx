@@ -29,7 +29,7 @@ export function useServiceCall<TReq = DefaultSrvReqType, TResp = DefaultSrvRespT
                 failedCallback,
             );
         },
-        [name, serviceType, callback, failedCallback],
+        [ros, name, serviceType, callback, failedCallback],
     );
 
     const callSrvPromise = useCallback(
@@ -45,7 +45,7 @@ export function useServiceCall<TReq = DefaultSrvReqType, TResp = DefaultSrvRespT
                 );
             });
         },
-        [name, serviceType, callback, failedCallback],
+        [ros, name, serviceType],
     );
 
     return { callSrv, callSrvPromise };
