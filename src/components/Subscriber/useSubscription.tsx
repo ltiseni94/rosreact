@@ -44,12 +44,12 @@ export function useSubscription<TMessage = DefaultMessageType>(
     );
     const messageRef = useRef(message);
 
-    const updateMessage = (msg: TMessage) => {
-        setMessage(msg);
-        messageRef.current = msg;
-    };
-
     useEffect(() => {
+        const updateMessage = (msg: TMessage) => {
+            setMessage(msg);
+            messageRef.current = msg;
+        };
+
         const messageCallback = (newMsg: TMessage) => {
             if (compareFunc) {
                 const compareRes = compareFunc(messageRef.current, newMsg);
@@ -83,6 +83,7 @@ export function useSubscription<TMessage = DefaultMessageType>(
             unsubscribe(subscription, messageCallback);
         };
     }, [
+        ros,
         topic,
         messageType,
         throttleRate,
