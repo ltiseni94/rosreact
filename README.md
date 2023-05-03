@@ -32,15 +32,16 @@ Don't forget to replace DISTRO with your ROS distribution - *noetic*, *melodic*,
 5. Publisher - COMPONENT: setup and execute a publisher
 6. ImageViewer - COMPONENT: view streaming from web_video_server http streaming server.
 7. ServiceCaller - COMPONENT: call service
-8. ServiceServer - COMPONENT: setup a service server
-9. Param - COMPONENT: get, set, or delete a ros parameters from the server parameters
-10. useParam - HOOK: use in a component wrapped by a Param component to get the parameter value.
-11. TopicListProvider - COMPONENT
-12. useTopicList - HOOK
-13. ParamListProvider - COMPONENT
-14. useParamList - HOOK
-15. ServiceListProvider - COMPONENT
-16. useServiceList - HOOK
+8. useServiceCall - HOOK: Provides callback and promise-based functions for service calls as a hook.
+9. ServiceServer - COMPONENT: setup a service server
+10. Param - COMPONENT: get, set, or delete a ros parameters from the server parameters
+11. useParam - HOOK: use in a component wrapped by a Param component to get the parameter value.
+12. TopicListProvider - COMPONENT
+13. useTopicList - HOOK
+14. ParamListProvider - COMPONENT
+15. useParamList - HOOK
+16. ServiceListProvider - COMPONENT
+17. useServiceList - HOOK
 
 ### **Example**
 
