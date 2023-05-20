@@ -14,7 +14,7 @@ export const Param = (props: ParamProps) => {
     const [paramValue, setParamValue] = useState(null);
 
     useEffect(() => {
-        if (!(props.setValue == null)) {
+        if (!(props.setValue == null) && !(props.setCallback == null)) {
             param.set(props.setValue, props.setCallback)
         }
     }, [props.setValue]);
