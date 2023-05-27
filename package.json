@@ -1,6 +1,6 @@
 {
   "name": "rosreact",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Ros client library for React, written in TypeScript",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
