@@ -1,2 +1,9 @@
-export {Subscriber, useMsg, subscribe, unsubscribe, TopicSettings, getTopic} from "./Subscriber";
-export {useSubscription, UseSubscriptionProps} from './useSubscription';
+export {
+    DefaultMessageType,
+    getTopic,
+    subscribe,
+    TopicSettings,
+    unsubscribe,
+} from './getTopic';
+export { Subscriber, useMsg } from './Subscriber';
+export { useSubscription, UseSubscriptionProps } from './useSubscription';
