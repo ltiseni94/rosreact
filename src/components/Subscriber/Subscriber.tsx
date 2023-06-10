@@ -1,9 +1,10 @@
-import { Topic, Ros, Message } from "roslib";
-import React, {useState, useEffect, createContext} from "react";
-import PropTypes from "prop-types";
-import { useRos } from "../RosConnection";
-import { useCheckedContext } from "../common";
+import PropTypes from 'prop-types';
+import React, { createContext, useEffect, useState } from 'react';
+import { Message } from 'roslib';
 
+import { useCheckedContext } from '../common';
+import { useRos } from '../RosConnection';
+import { DefaultMessageType, subscribe, TopicSettings, unsubscribe } from './getTopic';
 
 const MessageContext = createContext(new Message({}));
 
@@ -43,15 +44,7 @@ export const Subscriber = (props: SubscriberComponentProps) => {
     );
 }
 
-export type DefaultMessageType = Message;
-
-export interface SubscriberProps<TMessage = DefaultMessageType> {
-    topic: string;
-    messageType: string;
-    throttleRate?: number;
-    latch?: boolean;
-    queueLength?: number;
-    queueSize?: number;
+export interface SubscriberProps<TMessage = DefaultMessageType> extends TopicSettings {
     customCallback?: (msg: TMessage) => void;
     messageInitialValue?: TMessage;
 }
@@ -68,47 +61,6 @@ Subscriber.propTypes = {
     queueSize: PropTypes.number,
     messageInitialValue: PropTypes.object,
 }
-
-
-export function subscribe<TMessage = DefaultMessageType>(ros: Ros, settings: TopicSettings, callback: (message: TMessage) => void): Topic<TMessage> {
-    const topic = getTopic<TMessage>(ros, settings);
-    topic.subscribe(callback);
-    return topic;
-}
-
-
-export function getTopic<TMessage = DefaultMessageType>(ros: Ros, settings: TopicSettings) : Topic<TMessage> {
-    const options = {
-        ros: ros,
-        name: settings.topic,
-        messageType: settings.messageType,
-        throttle_rate: settings.throttleRate || 10,
-        latch: settings.latch || false,
-        queue_length: settings.queueLength || 1,
-        queue_size: settings.queueSize || 10,
-    }
-    return new Topic<TMessage>(options);
-}
-
-
-export interface TopicSettings {
-    topic: string;
-    messageType: string;
-    throttleRate?: number;
-    latch?: boolean;
-    queueLength?: number;
-    queueSize?: number;
-}
-
-
-export function unsubscribe<TMessage = DefaultMessageType>(topic: Topic<TMessage>, callback?: (message: TMessage) => void): void {
-    if (callback) {
-        topic.unsubscribe(callback);
-    } else {
-        topic.unsubscribe();
-    }
-}
-
 
 export function useMsg(): Message {
     return useCheckedContext(MessageContext);

@@ -1,13 +1,8 @@
-import { useRos } from '../RosConnection';
 import { useEffect, useRef, useState } from 'react';
-import {
-    DefaultMessageType,
-    subscribe,
-    SubscriberProps,
-    unsubscribe,
-} from './Subscriber';
 
-// TODO allow for sharing topics instead of creating a new one every time
+import { useRos } from '../RosConnection';
+import { DefaultMessageType, subscribe, unsubscribe } from './getTopic';
+import { SubscriberProps } from './Subscriber';
 
 export type UseSubscriptionProps<TMessage = DefaultMessageType> =
     SubscriberProps<TMessage> & {
