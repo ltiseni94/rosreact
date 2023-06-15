@@ -1,3 +1,4 @@
+export { AuthenticationMessage } from './AuthenticationMessage';
 export {
     closeConnection,
     connect,
