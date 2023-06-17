@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { createContext, PropsWithChildren, useContext, useEffect } from 'react';
 import { Ros } from 'roslib';
 
-import { VoidFunc } from '../common';
+import type { VoidFunc } from '../../declarations/types';
 import { AuthenticationMessage } from './AuthenticationMessage';
 import { getRosObject } from './RosInstanceManager';
 
