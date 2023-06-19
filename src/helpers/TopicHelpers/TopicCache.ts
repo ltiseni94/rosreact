@@ -142,3 +142,21 @@ export function unsubscribe<TMessage = DefaultMessageType>(
     }
     tryUnregister(topic);
 }
+
+export function advertise<T>(topic: Topic<T>, publisherUUID: string) {
+    topic.advertise();
+    if (topic?.settingsHash != null) {
+        const manager = sharedTopics.get(topic.settingsHash);
+        manager?.addPublisher(publisherUUID);
+    }
+}
+
+export function unadvertise<T>(topic: Topic<T>, publisherUUID: string) {
+    if (topic.settingsHash === undefined) {
+        topic.unadvertise();
+        return;
+    }
+    const manager = sharedTopics.get(topic.settingsHash);
+    manager?.removePublisher(publisherUUID);
+    tryUnregister(topic);
+}

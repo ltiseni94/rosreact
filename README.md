@@ -244,3 +244,6 @@ This library replace the legacy version roslib-reactjs (no more available online
 5. ServiceServer, ServiceCaller: toggler --> trigger; type --> serviceType.
 6. GetParam, SetParam, DeleteParam --> only component Param; get, set, and delete operations can be done using props.
 
+## Known Issues / Quirks
+- If React.StrictMode is enabled (dev mode), publishers with an initial message value will send twice on first mount due to StrictMode calling useEffect hooks twice.
+  This behavior shouldn't be harmful, either work around it, test a production build, or disable StrictMode.
