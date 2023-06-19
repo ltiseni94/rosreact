@@ -4,7 +4,7 @@ import { Message } from 'roslib';
 
 import { useCheckedContext } from '../common';
 import { useRos } from '../RosConnection';
-import { DefaultMessageType, subscribe, TopicSettings, unsubscribe } from './getTopic';
+import { DefaultMessageType, subscribe, TopicSettings, unsubscribe } from '../../helpers/TopicHelpers';
 
 const MessageContext = createContext(new Message({}));
 

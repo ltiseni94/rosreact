@@ -228,7 +228,7 @@ Use an IDE such as VsCode or PyCharm to explore available component props using 
 2. connect - FUNC: connect the *ros* object to the server websocket.
 3. closeConnection - FUNC: disconnect the *ros* object to the server websocket.
 4. setupConnectionCallbacks - FUNC: attach callbacks for connection events to the *ros* object.
-5. getTopic - FUNC: get a *topic* object to perform subscribe/publish operations (topic methods)
+5. createTopic - FUNC: get a *topic* object to perform subscribe/publish operations (topic methods). Avoid using in favor of useSubscription/usePublisher hooks and Subscriber/Publisher components which cache topic instances.
 
 Use the roslib library to perform other low-level operations. You just need to retrieve the current *ros* object by using the *useRos* hook in any of your React components.
 

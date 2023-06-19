@@ -2,7 +2,7 @@ import React, { useEffect, useState, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Message } from "roslib";
 import { useRos } from "../RosConnection";
-import { TopicSettings, getTopic } from "../Subscriber";
+import { getCachedTopic, TopicSettings } from '../../helpers/TopicHelpers';
 
 
 export const Publisher = (props: PublisherProps) => {
@@ -19,7 +19,7 @@ export const Publisher = (props: PublisherProps) => {
         queueSize
     };
 
-    const publisher = getTopic(ros, topicSettings);
+    const publisher = getCachedTopic(ros, topicSettings);
 
     if (props.autoRepeat) {
         const rate = throttleRate || 1;
