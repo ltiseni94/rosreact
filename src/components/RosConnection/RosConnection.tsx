@@ -1,19 +1,12 @@
-import { sha512 } from 'js-sha512';
 import PropTypes from 'prop-types';
-import React, {
-    createContext,
-    PropsWithChildren,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import React, { createContext, PropsWithChildren, useContext, useEffect } from 'react';
 import { Ros } from 'roslib';
 
+import { VoidFunc } from '../common';
+import { AuthenticationMessage } from './AuthenticationMessage';
 import { getRosObject } from './RosInstanceManager';
 
-const RosContext = createContext<Ros>(new Ros({}));
-
+/**** Types ****/
 interface RosConnectionProps {
     url?: string;
     autoConnect?: boolean;
@@ -22,6 +15,8 @@ interface RosConnectionProps {
     user?: string;
     password?: string;
 }
+
+/**** Component Definition ****/
 
 const DefaultRosProps: Required<RosConnectionProps> = {
     url: 'ws://127.0.0.1:9090',
@@ -32,50 +27,49 @@ const DefaultRosProps: Required<RosConnectionProps> = {
     password: '',
 };
 
+const RosContext = createContext<Ros>(getRosObject(DefaultRosProps.url));
+
 export const RosConnection = ({
     children,
     ...userProps
 }: PropsWithChildren<Partial<RosConnectionProps>>) => {
     const props = { ...DefaultRosProps, ...userProps };
-    const [url, setUrl] = useState(props.url);
-    const rosRef = useRef<Ros>(new Ros({}));
-
-    // Trigger update if URL changes
-    useEffect(() => {
-        setUrl(props.url);
-    }, [props.url]);
 
     useEffect(() => {
-        rosRef.current = getRosObject(url);
+        const curRos = getRosObject(props.url);
 
         setupConnectionCallbacks(
-            rosRef.current,
-            url,
+            curRos,
+            props.url,
             props.autoConnect,
             props.autoConnectTimeout,
             props.authenticate,
             props.user,
             props.password,
         );
-        connect(rosRef.current, url, props.authenticate, props.user, props.password);
+        connect(curRos, props.url, props.authenticate, props.user, props.password);
         return () => {
-            closeConnection(rosRef.current);
+            closeConnection(curRos);
         };
     }, [
-        url,
         props.authenticate,
         props.autoConnect,
         props.autoConnectTimeout,
         props.password,
+        props.url,
         props.user,
     ]);
 
-    return <RosContext.Provider value={rosRef.current}>{children}</RosContext.Provider>;
+    return (
+        <RosContext.Provider value={getRosObject(props.url)}>
+            {children}
+        </RosContext.Provider>
+    );
 };
 
 RosConnection.propTypes = {
     children: PropTypes.node.isRequired,
-    url: PropTypes.string.isRequired,
+    url: PropTypes.string,
     autoConnect: PropTypes.bool,
     autoConnectTimeout: PropTypes.number,
     authenticate: PropTypes.bool,
@@ -83,32 +77,7 @@ RosConnection.propTypes = {
     password: PropTypes.string,
 };
 
-export function setupConnectionCallbacks(
-    ros: Ros,
-    url = DefaultRosProps.url,
-    autoConnect = DefaultRosProps.autoConnect,
-    autoConnectTimeout = DefaultRosProps.autoConnectTimeout,
-    authenticate = DefaultRosProps.authenticate,
-    user = DefaultRosProps.user,
-    password = DefaultRosProps.password,
-): void {
-    ros.on('connection', () => {
-        console.log('Connected');
-    });
-    ros.on('close', () => {
-        console.log('Disconnected');
-    });
-    ros.on('error', () => {
-        console.log('Connection error');
-
-        // Attempt to reconnect
-        if (autoConnect) {
-            setTimeout(() => {
-                connect(ros, url, authenticate, user, password);
-            }, autoConnectTimeout);
-        }
-    });
-}
+/**** Utility Functions ****/
 
 export function connect(
     ros: Ros,
@@ -135,38 +104,77 @@ export function connect(
 
 export function closeConnection(ros: Ros): void {
     ros.close();
+
+    // Unregister callbacks so they don't compound when remounting
+    ros.connectorCallbacks.forEach((callbacks, event) => {
+        callbacks.forEach(cb => {
+            ros.off(event, cb);
+        });
+    });
+    ros.connectorCallbacks.clear();
 }
 
-class AuthenticationMessage {
-    secret: string;
-    client: string;
-    dest: string;
-    rand: string;
-    time: number;
-    timeEnd: number;
-    level: string;
+export function setupConnectionCallbacks(
+    ros: Ros,
+    url = DefaultRosProps.url,
+    autoConnect = DefaultRosProps.autoConnect,
+    autoConnectTimeout = DefaultRosProps.autoConnectTimeout,
+    authenticate = DefaultRosProps.authenticate,
+    user = DefaultRosProps.user,
+    password = DefaultRosProps.password,
+): void {
+    const connectCB = () => {
+        console.log(`Connected to instance ${ros.uid}`);
+    };
 
-    constructor(url: string, user: string, password: string) {
-        this.dest = url;
-        this.client = user;
-        this.secret = password;
-        this.rand = 'randomstring';
-        this.time = new Date().getTime();
-        this.level = 'user';
-        this.timeEnd = this.time;
+    const closeCB = () => {
+        console.log('Disconnected');
+    };
+
+    const errorCB = () => {
+        console.log('Connection error');
+
+        // Attempt to reconnect
+        if (autoConnect) {
+            setTimeout(() => {
+                if (ros.connectorCallbacks.size === 0) {
+                    // This ros instance is dormant
+                    return;
+                }
+                connect(ros, url, authenticate, user, password);
+            }, autoConnectTimeout);
+        }
+    };
+
+    addCallback(ros, 'connection', connectCB);
+    addCallback(ros, 'close', closeCB);
+    addCallback(ros, 'error', errorCB);
+}
+
+/**
+ * Attempts to add a callback to the ros instance, and register it in the set for
+ * when we disconnect.
+ * Fails silent if the callback already exists in the set.
+ * @param ros Ros instance
+ * @param event The event name (e.g. 'connect')
+ * @param cb Callback function
+ */
+function addCallback(ros: Ros, event: string, cb: () => void) {
+    // Get our callbacks for this event, create if not exists
+    let cbSet = ros.connectorCallbacks.get(event);
+    if (cbSet === undefined) {
+        cbSet = new Set<VoidFunc>();
+        ros.connectorCallbacks.set(event, cbSet);
     }
 
-    getMac() {
-        return sha512(
-            this.secret +
-                this.client +
-                this.dest +
-                this.rand +
-                this.time.toString() +
-                this.level +
-                this.timeEnd.toString(),
-        );
+    // If the function we're trying to add already exists, return
+    if (cbSet.has(cb)) {
+        return;
     }
+
+    // Add it to the event set, and turn on for this instance
+    cbSet.add(cb);
+    ros.on(event, cb);
 }
 
 export function useRos(): Ros {

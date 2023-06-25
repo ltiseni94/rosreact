@@ -20,6 +20,7 @@ const RosInstances: RosInstanceHolder = {};
 export const getRosObject = (url: string, options: RosPropsWithoutUrl = {}): Ros => {
     let rosInstance = new Ros(options);
     rosInstance.uid = uuidv4();
+    rosInstance.connectorCallbacks = new Map();
     if (RosInstances[url] === undefined) {
         // cache miss, store
         RosInstances[url] = rosInstance;

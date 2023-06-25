@@ -1,5 +1,7 @@
 import { Context, useContext } from 'react';
 
+export type VoidFunc = () => void;
+
 export function useCheckedContext(contextType: Context<any>): any {
     const context = useContext(contextType);
     if (context === undefined) {
@@ -15,10 +17,14 @@ export function useCheckedContext(contextType: Context<any>): any {
  */
 declare module 'roslib' {
     interface Ros {
+        // UUID to identify an instance
         uid?: string;
+        // Callbacks specifically added by RosConnection, to easily remove later
+        connectorCallbacks: Map<string, Set<VoidFunc>>;
     }
 
     interface Topic {
+        // Hash of settings for easy lookup
         settingsHash?: string;
     }
 }
