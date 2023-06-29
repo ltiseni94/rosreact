@@ -14,13 +14,24 @@ export type PublisherHook<T> = {
     publish: (msg: T) => void;
 };
 
+export type PublisherMsgProp<TMessage extends object> = TMessage | (() => TMessage);
+
 export interface PublisherProps extends TopicSettings {
     autoRepeat?: boolean;
 }
 
-export function usePublisher<TMessage = DefaultMessageType>(
+function getMessage<TMessage extends object>(
+    message: PublisherMsgProp<TMessage>,
+): TMessage {
+    if (typeof message === 'function') {
+        return message();
+    }
+    return message;
+}
+
+export function usePublisher<TMessage extends object = DefaultMessageType>(
     props: PublisherProps,
-    message?: TMessage,
+    message?: PublisherMsgProp<TMessage>,
 ): PublisherHook<TMessage> {
     const hookId = useRef(uuidv4());
     const ros = useRos();
@@ -41,11 +52,11 @@ export function usePublisher<TMessage = DefaultMessageType>(
             const rate = topicSettings.throttleRate ?? 1;
             const period = Math.round(1000 / rate);
             intervalId = window.setInterval(() => {
-                publisher.publish(message);
+                publisher.publish(getMessage(message));
                 intervalStarted = true;
             }, period);
         } else {
-            publisher.publish(message);
+            publisher.publish(getMessage(message));
         }
 
         return () => {
@@ -56,7 +67,7 @@ export function usePublisher<TMessage = DefaultMessageType>(
                 message !== undefined &&
                 publisher.isAdvertised
             ) {
-                publisher.publish(message);
+                publisher.publish(getMessage(message));
             }
         };
     }, [autoRepeat, message, publisher, topicSettings.throttleRate]);

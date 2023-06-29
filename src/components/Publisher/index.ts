@@ -1,2 +1,2 @@
 export { Publisher } from './Publisher';
-export { PublisherProps, usePublisher } from './usePublisher';
+export { PublisherMsgProp, PublisherProps, usePublisher } from './usePublisher';

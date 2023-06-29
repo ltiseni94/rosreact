@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import { DefaultMessageType } from '../../helpers/TopicHelpers';
-import { PublisherProps, usePublisher } from './usePublisher';
+import { PublisherMsgProp, PublisherProps, usePublisher } from './usePublisher';
 
-export function Publisher<TMessage = DefaultMessageType>(
+export function Publisher<TMessage extends object = DefaultMessageType>(
     props: PublisherProps,
-    message?: TMessage,
+    message?: PublisherMsgProp<TMessage>,
 ) {
     usePublisher(props, message);
 
