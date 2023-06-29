@@ -14,18 +14,18 @@ export type PublisherHook<T> = {
     publish: (msg: T) => void;
 };
 
-export interface PublisherProps<TMessage = DefaultMessageType> extends TopicSettings {
-    message?: TMessage;
+export interface PublisherProps extends TopicSettings {
     autoRepeat?: boolean;
 }
 
 export function usePublisher<TMessage = DefaultMessageType>(
-    props: PublisherProps<TMessage>,
+    props: PublisherProps,
+    message?: TMessage,
 ): PublisherHook<TMessage> {
     const hookId = useRef(uuidv4());
     const ros = useRos();
 
-    const { message, autoRepeat, ...topicSettings } = props;
+    const { autoRepeat, ...topicSettings } = props;
 
     const publisher = getCachedTopic<TMessage>(ros, topicSettings);
 

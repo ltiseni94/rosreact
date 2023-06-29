@@ -1,13 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { DefaultMessageType } from '../../helpers/TopicHelpers';
 import { PublisherProps, usePublisher } from './usePublisher';
 
-export const Publisher = (props: PublisherProps) => {
-    usePublisher(props);
+export function Publisher<TMessage = DefaultMessageType>(
+    props: PublisherProps,
+    message?: TMessage,
+) {
+    usePublisher(props, message);
 
     return <React.Fragment />;
-};
+}
 
 Publisher.propTypes = {
     topic: PropTypes.string.isRequired,
