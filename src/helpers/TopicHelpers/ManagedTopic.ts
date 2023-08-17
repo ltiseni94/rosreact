@@ -25,7 +25,7 @@ export class ManagedTopic<T> {
         return (
             !this.topic.hasListeners() &&
             !this.topic.isAdvertised &&
-            this.publishers.size === 0
+            this.publishers.size == 0
         );
     };
 
