@@ -228,7 +228,7 @@ Use an IDE such as VsCode or PyCharm to explore available component props using 
 2. connect - FUNC: connect the *ros* object to the server websocket.
 3. closeConnection - FUNC: disconnect the *ros* object to the server websocket.
 4. setupConnectionCallbacks - FUNC: attach callbacks for connection events to the *ros* object.
-5. getTopic - FUNC: get a *topic* object to perform subscribe/publish operations (topic methods)
+5. createTopic - FUNC: get a *topic* object to perform subscribe/publish operations (topic methods). Avoid using in favor of useSubscription/usePublisher hooks and Subscriber/Publisher components which cache topic instances.
 
 Use the roslib library to perform other low-level operations. You just need to retrieve the current *ros* object by using the *useRos* hook in any of your React components.
 
@@ -244,3 +244,6 @@ This library replace the legacy version roslib-reactjs (no more available online
 5. ServiceServer, ServiceCaller: toggler --> trigger; type --> serviceType.
 6. GetParam, SetParam, DeleteParam --> only component Param; get, set, and delete operations can be done using props.
 
+## Known Issues / Quirks
+- If React.StrictMode is enabled (dev mode), publishers with an initial message value will send twice on first mount due to StrictMode calling useEffect hooks twice.
+  This behavior shouldn't be harmful, either work around it, test a production build, or disable StrictMode.

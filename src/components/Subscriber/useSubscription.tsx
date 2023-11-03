@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { DefaultMessageType, subscribe, unsubscribe } from '../../helpers/TopicHelpers';
 import { useRos } from '../RosConnection';
-import { DefaultMessageType, subscribe, unsubscribe } from './getTopic';
 import { SubscriberProps } from './Subscriber';
 
 export type UseSubscriptionProps<TMessage = DefaultMessageType> =
